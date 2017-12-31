@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/inicio"
+            android:icon="@drawable/ic_inicio"
+            android:title="Inicio"/>
+        <item
+            android:id="@+id/registrarUsuario"
+            android:icon="@drawable/ic_agregar_usuario"
+            android:title="Registrar Usuario"/>
+        <item
+            android:id="@+id/consultarUsuario"
+            android:icon="@drawable/ic_consultar_usuario"
+            android:title="Consulta Usuario"/>
+        <item
+            android:id="@+id/consultarListaUsuarios"
+            android:icon="@drawable/ic_lista_usuarios"
+            android:title="Lista Usuarios"/>
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/desarrollador"
+                android:icon="@drawable/ic_desarrollador"
+                android:title="Desarrollador"/>
+        </menu>
+    </item>
+
+</menu>
