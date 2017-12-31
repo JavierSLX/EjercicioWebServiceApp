@@ -15,6 +15,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.javiersl.webserviceapp.Fragments.ConsultaUsuarioFragment;
+import com.example.javiersl.webserviceapp.Fragments.InicioAppFragment;
 import com.example.javiersl.webserviceapp.Fragments.RegistroUsuarioFragment;
 
 public class MainActivity extends AppCompatActivity
@@ -49,6 +51,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Elige por default el fragmento de inicio
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.contenedor, new InicioAppFragment()).addToBackStack(null).commit();
     }
 
     @Override
@@ -95,22 +101,28 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item)
     {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
         boolean presionoOpcion = false;
         Fragment fragment = null;
 
-        switch(id)
+        switch(item.getItemId())
         {
             case R.id.inicio:
+                fragment = new InicioAppFragment();
+                presionoOpcion = true;
                 break;
 
+            //Opción del menu Registrar Usuario
             case R.id.registrarUsuario:
                 fragment = new RegistroUsuarioFragment();
                 presionoOpcion = true;
                 fab.hide();
                 break;
 
+            //Opcion del menu Consultar Usuario
             case R.id.consultarUsuario:
+                fragment = new ConsultaUsuarioFragment();
+                presionoOpcion = true;
+                fab.hide();
                 break;
 
             case R.id.consultarListaUsuarios:
@@ -120,6 +132,7 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             default:
+                fab.show();
                 break;
         }
 
