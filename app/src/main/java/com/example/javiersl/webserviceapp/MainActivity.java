@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.javiersl.webserviceapp.Fragments.ConsultaUsuarioFragment;
+import com.example.javiersl.webserviceapp.Fragments.ConsultarListaUsuariosFragment;
 import com.example.javiersl.webserviceapp.Fragments.InicioAppFragment;
 import com.example.javiersl.webserviceapp.Fragments.RegistroUsuarioFragment;
 
@@ -126,6 +127,9 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.consultarListaUsuarios:
+                fragment = new ConsultarListaUsuariosFragment();
+                presionoOpcion = true;
+                fab.hide();
                 break;
 
             case R.id.desarrollador:
