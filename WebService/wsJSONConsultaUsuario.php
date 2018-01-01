@@ -14,6 +14,7 @@
 		
 		//Hace la consulta
 		$consulta = "SELECT nombre, profesion FROM t_usuario WHERE nombre LIKE '$nombre%';";
+		mysqli_set_charset($conexion, "utf8");
 		$resultado = mysqli_query($conexion, $consulta);
 		
 		//Lo convierte en JSON

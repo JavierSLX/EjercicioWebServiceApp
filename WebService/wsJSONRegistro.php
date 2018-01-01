@@ -16,6 +16,7 @@
 		
 		//Hace la insercion
 		$insert = "INSERT INTO t_usuario(nombre, profesion) VALUES ('$nombre', '$profesion');";
+		mysqli_set_charset($conexion, "utf8");
 		$resultado = mysqli_query($conexion, $insert);
 		
 		//Si hace la insercion
