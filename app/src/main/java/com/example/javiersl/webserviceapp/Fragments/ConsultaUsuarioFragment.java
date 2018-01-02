@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +83,7 @@ public class ConsultaUsuarioFragment extends Fragment implements IBasic, View.On
         RequestQueue queue = Volley.newRequestQueue(getContext());
 
         //Arma la url de la peticion
-        String url = HOST + "EjercicioWebService/wsJSONConsultaUsuario.php";
+        String url = HOST + "EjercicioWebService/wsJSONConsultaUsuarioImagen.php";
         String cadena = "?nombre=" + edtNombre.getText().toString();
         cadena = cadena.replace(" ", "%20");
         url += cadena;
@@ -114,5 +115,6 @@ public class ConsultaUsuarioFragment extends Fragment implements IBasic, View.On
     {
         progressDialog.hide();
         Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+        Log.i("error", error.toString());
     }
 }

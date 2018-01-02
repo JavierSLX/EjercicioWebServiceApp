@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.javiersl.webserviceapp.Class.Usuario;
@@ -55,9 +56,12 @@ public class UsuarioListaAdapter extends BaseAdapter
 
         TextView txtNombre = (TextView)view.findViewById(R.id.txtNombre);
         TextView txtProfesion = (TextView)view.findViewById(R.id.txtProfesion);
+        ImageView imgUsuario = (ImageView)view.findViewById(R.id.imgUsuario);
 
         txtNombre.setText(getItem(position).getNombre());
         txtProfesion.setText(getItem(position).getProfesion());
+        if (getItem(position).getImagen() != null)
+            imgUsuario.setImageBitmap(getItem(position).getImagen());
 
         return view;
     }

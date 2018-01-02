@@ -18,10 +18,10 @@
 		$resultado = mysqli_query($conexion, $consulta);
 		
 		//Lo convierte en JSON
-		$datos['usuario'] = array();
+		$datos = array();
 		foreach($resultado as $row)
 		{
-			array_push($datos["usuario"], array('id'=>$row['id'],'nombre'=>$row['nombre'],'profesion'=>$row['profesion'],'imagen'=>base64_encode($row['imagen']), 'ruta_imagen'=>$row['ruta_imagen']));
+			array_push($datos, array('id'=>$row['id'],'nombre'=>$row['nombre'],'profesion'=>$row['profesion'],'imagen'=>base64_encode($row['imagen']), 'ruta_imagen'=>$row['ruta_imagen']));
 		}
 		
 		//Regresa el JSON
