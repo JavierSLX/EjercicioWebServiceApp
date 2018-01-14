@@ -1,8 +1,8 @@
 <?php
 	$hostname = "localhost";
-	$database = "db_usuario";
-	$username = "root";
-	$password = "";
+	$database = "morpheus_usuario";
+	$username = "morpheus_admin";
+	$password = "morpheusadmin";
 	
 	if (isset($_REQUEST["btn"]))
 	{
@@ -18,7 +18,7 @@
 		$ruta = $_SERVER['DOCUMENT_ROOT']."/".$ruta."/".$nombreArchivo;
 		move_uploaded_file($archivo, $ruta);
 		$imagen = "./imagenes/".$nombreArchivo;
-		$rutaServidor = "http://192.168.1.110/EjercicioWebService/imagenes/".$nombreArchivo;
+		$rutaServidor = "http://morpheusdss.com/EjercicioWebService/imagenes/".$nombreArchivo;
 		echo $rutaServidor;
 		
 		//Obtiene los demas datos
@@ -58,24 +58,5 @@
 			mysqli_close($conexion);
 			echo json_encode($datos);
 		}
-	}
-	
-	//Función que permite subir una imagen
-	function subir_fichero($directorio_destino, $nombre_fichero)
-	{
-		//Saca el nombre del archivo
-		$archivo = $_FILES['imagen']['tmp_name'];
-		
-		//Comprueba que existe el directorio 
-		if (is_dir($directorio_destino) && is_uploaded_file($archivo))
-		{
-			$imagen = $_FILES[$nombre_fichero]['name'];
-			$type = $_FILES[$nombre_fichero]['type'];
-			
-			if (move_uploaded_file($archivo, $directorio_destino."/".$imagen))
-				return true;
-		}
-		
-		return false;
 	}
 ?>

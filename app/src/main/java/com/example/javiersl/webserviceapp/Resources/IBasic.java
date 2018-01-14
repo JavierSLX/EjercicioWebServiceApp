@@ -6,5 +6,5 @@ package com.example.javiersl.webserviceapp.Resources;
 
 public interface IBasic
 {
-    String HOST = "http://192.168.1.110/";
+    String HOST = "http://morpheusdss.com/";
 }

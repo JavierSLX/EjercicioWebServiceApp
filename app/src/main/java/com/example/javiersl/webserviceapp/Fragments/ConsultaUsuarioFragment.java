@@ -87,6 +87,7 @@ public class ConsultaUsuarioFragment extends Fragment implements IBasic, View.On
         String cadena = "?nombre=" + edtNombre.getText().toString();
         cadena = cadena.replace(" ", "%20");
         url += cadena;
+        Log.i("urlConsulta", url);
 
         //Arma el objeto de respuesta y agrega la petición
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.PUT, url, null, this, this);

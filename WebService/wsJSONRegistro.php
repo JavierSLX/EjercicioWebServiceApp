@@ -1,8 +1,8 @@
 <?php
 	$hostname = "localhost";
-	$database = "db_usuario";
-	$username = "root";
-	$password = "";
+	$database = "morpheus_usuario";
+	$username = "morpheus_admin";
+	$password = "morpheusadmin";
 	
 	$datos = array();
 	if (isset($_REQUEST['nombre']) && isset($_REQUEST['profesion']))

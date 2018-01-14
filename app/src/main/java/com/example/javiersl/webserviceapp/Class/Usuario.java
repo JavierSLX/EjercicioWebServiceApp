@@ -92,6 +92,7 @@ public class Usuario
                 else
                     img = null;
 
+                //Crea un objeto Usuario y lo coloca en la lista
                 Usuario usuario = new Usuario(jsonObject.getString("nombre"), jsonObject.getString("profesion"),
                         img, jsonObject.getString("ruta_imagen"));
                 lista.add(usuario);
