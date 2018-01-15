@@ -19,6 +19,7 @@ import com.example.javiersl.webserviceapp.Fragments.ConsultaUsuarioFragment;
 import com.example.javiersl.webserviceapp.Fragments.ConsultarListaUsuariosFragment;
 import com.example.javiersl.webserviceapp.Fragments.InicioAppFragment;
 import com.example.javiersl.webserviceapp.Fragments.RegistroUsuarioFragment;
+import com.example.javiersl.webserviceapp.Fragments.RegistroUsuarioImagenFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -114,7 +115,8 @@ public class MainActivity extends AppCompatActivity
 
             //Opción del menu Registrar Usuario
             case R.id.registrarUsuario:
-                fragment = new RegistroUsuarioFragment();
+                //fragment = new RegistroUsuarioFragment();
+                fragment = new RegistroUsuarioImagenFragment();
                 presionoOpcion = true;
                 fab.hide();
                 break;

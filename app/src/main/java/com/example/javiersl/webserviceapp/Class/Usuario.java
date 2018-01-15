@@ -88,6 +88,14 @@ public class Usuario
                 {
                     byte[] byteCode = Base64.decode(jsonObject.getString("imagen"), Base64.DEFAULT);
                     img = BitmapFactory.decodeByteArray(byteCode, 0, byteCode.length);
+
+                    //Cuando la imagen está muy pesada
+                    /*int alto = 150; //alto en pixeles
+                    int ancho = 150; //ancho en pixeles
+
+                    Bitmap foto = BitmapFactory.decodeByteArray(byteCode, 0, byteCode.length);
+                    img = Bitmap.createScaledBitmap(foto, ancho, alto, true);*/
+
                 }
                 else
                     img = null;
