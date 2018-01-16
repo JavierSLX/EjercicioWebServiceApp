@@ -8,11 +8,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -25,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -35,6 +39,10 @@ import com.example.javiersl.webserviceapp.R;
 import org.json.JSONArray;
 
 import java.io.File;
+import java.io.IOException;
+
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.Manifest.permission.CAMERA;
 
 /**
  * Created by Morpheus on 14/01/2018.
@@ -47,7 +55,6 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
     private static final String DIRECTORIO_IMAGEN = CARPETA_PRINCIPAL + CARPETA_IMAGEN; //Ruta carpeta directorio
     private String path; //Almacena la ruta de la imagen
     private File fileImagen;
-    private Uri imagen;
     private Bitmap bitmap;
     private static final int COD_SELECCIONA = 10;
     private static final int COD_FOTO = 20;
@@ -75,6 +82,9 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
 
         imgUsuario.setOnClickListener(this);
         btRegistrar.setOnClickListener(this);
+
+        //Checa los permisos
+        validaPermisos();
     }
 
     @Override
@@ -93,6 +103,87 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
             default:
                 break;
         }
+    }
+
+    //Método que checa si existen los permisos
+    private boolean validaPermisos()
+    {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return true;
+
+        if ((getContext().checkSelfPermission(CAMERA) == PackageManager.PERMISSION_GRANTED) &&
+                (getContext().checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED))
+            return true;
+
+        if ((shouldShowRequestPermissionRationale(CAMERA)) || (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)))
+            cargarDialogoRecomendacion();
+        else
+            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, CAMERA}, 100);
+        return false;
+    }
+
+    //Carga el dialogo de recomendación de permisos
+    private void cargarDialogoRecomendacion()
+    {
+        AlertDialog.Builder dialogo = new AlertDialog.Builder(getContext());
+        dialogo.setTitle("Permisos Desactivados");
+        dialogo.setMessage("Debe aceptar los permisos para el correcto funcionamiento de la app");
+        dialogo.setPositiveButton("Aceptar", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, CAMERA}, 100);
+            }
+        });
+        dialogo.show();
+    }
+
+    //Al requerir la opción del dialogo de permisos
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100)
+        {
+            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED)
+            {
+            }
+            else
+                solicitarPermisosManual();
+        }
+    }
+
+    //Método que da los permisos de manera manual
+    private void solicitarPermisosManual()
+    {
+        final CharSequence[] opciones = {"Si", "No"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle("¿Desea configurar los permisos de forma manual?");
+        builder.setItems(opciones, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                if (opciones[which].equals("Si"))
+                {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getContext().getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Los permisos no fueron aceptados", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        builder.show();
     }
 
     //Construye el dialogo de opciones
@@ -130,7 +221,6 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
     //Evento de tomar foto
     private void abrirCamara()
     {
-        checarPermisos();
         File miFile = new File(Environment.getExternalStorageDirectory(), DIRECTORIO_IMAGEN);
         boolean isCreada = miFile.exists();
         Log.i("creada", String.valueOf(isCreada));
@@ -156,40 +246,10 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
             fileImagen = new File(path);
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagen));
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagen));
 
             startActivityForResult(intent, COD_FOTO);
             //startActivity(intent);
-        }
-    }
-
-    private void checarPermisos()
-    {
-        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-        {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) && shouldShowRequestPermissionRationale(Manifest.permission.CAMERA))
-            {
-            }
-            else
-            {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 100);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode)
-        {
-            case 100:
-                if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)
-                {
-                }
-                break;
         }
     }
 
@@ -198,12 +258,27 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
+        Matrix matrix;
+        Bitmap imagen;
 
         switch (requestCode)
         {
             case COD_SELECCIONA:
                 Uri miPath = data.getData();
-                imgUsuario.setImageURI(miPath);
+                try
+                {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), miPath);
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                    bitmap = null;
+                }
+
+                //Rota la imagen
+                matrix = new Matrix();
+                matrix.postRotate(90);
+                imagen = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                imgUsuario.setImageBitmap(imagen);
                 break;
 
             case COD_FOTO:
@@ -218,7 +293,12 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
                         });
 
                 bitmap = BitmapFactory.decodeFile(path);
-                imgUsuario.setImageBitmap(bitmap);
+
+                //Rota la imagen
+                matrix = new Matrix();
+                matrix.postRotate(90);
+                imagen = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                imgUsuario.setImageBitmap(imagen);
                 break;
 
             default:
