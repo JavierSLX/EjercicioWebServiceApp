@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,16 +31,22 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.javiersl.webserviceapp.R;
 
 import org.json.JSONArray;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.Manifest.permission.CAMERA;
@@ -48,7 +55,7 @@ import static android.Manifest.permission.CAMERA;
  * Created by Morpheus on 14/01/2018.
  */
 
-public class RegistroUsuarioImagenFragment extends Fragment implements View.OnClickListener, Response.Listener<JSONArray>, Response.ErrorListener
+public class RegistroUsuarioImagenFragment extends Fragment implements View.OnClickListener
 {
     private static final String CARPETA_PRINCIPAL = "misImagenesApp/"; //Directorio Principal
     private static final String CARPETA_IMAGEN = "imagenes"; //Carpeta donde se guardan las fotos
@@ -62,6 +69,7 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
     private ProgressDialog progressDialog;
     private EditText edtNombre, edtProfesion;
     private ImageView imgUsuario;
+    private StringRequest stringRequest;
 
     @Nullable
     @Override
@@ -249,7 +257,6 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagen));
 
             startActivityForResult(intent, COD_FOTO);
-            //startActivity(intent);
         }
     }
 
@@ -314,17 +321,61 @@ public class RegistroUsuarioImagenFragment extends Fragment implements View.OnCl
         progressDialog.show();
 
         RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = "http://morpheusdss.com/EjercicioWebService/wsJSONRegistroMovil.php?";
+
+        //Para enviar por método POST
+        stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response)
+            {
+                progressDialog.hide();
+
+                if (response.trim().equalsIgnoreCase("Guardado"))
+                {
+                    edtNombre.setText("");
+                    edtProfesion.setText("");
+                    Toast.makeText(getContext(), "Se ha registrado con éxito", Toast.LENGTH_SHORT).show();
+                }
+                else
+                    Toast.makeText(getContext(), "No se ha registrado", Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                progressDialog.hide();
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError
+            {
+                String nombre = edtNombre.getText().toString();
+                String profesion = edtProfesion.getText().toString();
+                String imagen = convertirImgString(bitmap);
+
+                Map<String, String> parametros = new HashMap<>();
+                parametros.put("nombre", nombre);
+                parametros.put("profesion", profesion);
+                parametros.put("imagen", imagen);
+
+                return parametros;
+            }
+        };
+
+        queue.add(stringRequest);
     }
 
-    @Override
-    public void onResponse(JSONArray response)
+    //Convierte una imagen en String
+    private String convertirImgString(Bitmap bitmap)
     {
+        ByteArrayOutputStream array = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, array);
+        byte[] imagenByte = array.toByteArray();
+        String imagenString = Base64.encodeToString(imagenByte, Base64.DEFAULT);
 
-    }
-
-    @Override
-    public void onErrorResponse(VolleyError error)
-    {
-
+        return imagenString;
     }
 }
